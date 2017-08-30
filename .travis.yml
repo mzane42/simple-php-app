@@ -14,3 +14,18 @@ script:
   - docker-compose build
   - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   - docker-compose push
+
+before_deploy:
+  - curl -fSL "https://releases.hashicorp.com/terraform/0.10.2/terraform_0.10.2_linux_amd64.zip" -o terraform.zip
+  - sudo unzip terraform.zip -d /opt/terraform
+  - sudo ln -s /opt/terraform/terraform /usr/bin/terraform
+  - rm -f terraform.zip
+
+# terraform apply
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: "./deploy.sh"
+    on:
+      repo: mzane42/simple-php-app
+      branch: master
